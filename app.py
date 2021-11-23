@@ -6,13 +6,13 @@ import DBcm
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
-config = {
-        'host':'',
-        'database':'',
-        'user':'',
-        'password':''
-    }
 
+config = {
+    'host':'127.0.0.1',
+    'database':'leaderdb',
+    'user':'leader',
+    'password':'leaderpasswd'
+}
 
 @auth.verify_password
 def authenticate(username, password):
@@ -30,6 +30,15 @@ def saveScore():
     with DBcm.UseDatabase(config) as db:
         db.execute(SQL_INSERT, (request.args.get('name'),request.args.get('score'),))
 
+@app.route("/topTen", methods=["GET"])
+def getTopTen():
+    SQL_SELECT = "select player,points from scores order by points desc"
+    with DBcm.UseDatabase(config) as db:
+        db.execute(SQL_SELECT)
+        results = db.fetchall()
+
+    top_ten=results[:10]
+    return f"{top_ten}"
 
 if __name__ == "__main__":
     app.run(debug=True)
