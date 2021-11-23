@@ -31,6 +31,7 @@ def saveScore():
         db.execute(SQL_INSERT, (request.args.get('name'),request.args.get('score'),))
 
 @app.route("/topTen", methods=["GET"])
+@auth.login_required
 def getTopTen():
     SQL_SELECT = "select player,points from scores order by points desc"
     with DBcm.UseDatabase(config) as db:
